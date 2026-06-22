@@ -1,22 +1,17 @@
-name: Project Lucy
+name: CI
+
 on:
-  workflow_dispatch:
+  workflow_dispatch
+
+permissions:
+  contents: write
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
+  build-kernel:
+    name: Build Kernel
+    runs-on: ubuntu-22.04
     steps:
-      - name: Checkout Kernel Source
-        uses: actions/checkout@v4
-        with:
-          # Required to allow subsequent git commands to authenticate
-          persist-credentials: true
-          # Uncomment and add if your repository is private:
-          # token: ${{ secrets.GH_PAT }}
-
-      - name: Build Kernel
+      - name: Build
         uses: dabao1955/kernel_build_action@main
         with:
           kernel-url: https://github.com/YOUR_USERNAME/android_kernel_xiaomi_sm8250
@@ -24,6 +19,31 @@ jobs:
           config: munch_defconfig
           arch: arm64
           anykernel3: true
-          # Ensure these match your specific build needs
           aosp-gcc: true
           aosp-clang: true
+          kernel-dir: kernel
+          depth: 1
+          vendor: false
+          vendor-branch: main
+          vendor-dir: vendor
+          # FIX: Updated from r383902 to r383902b1 (valid suffix)
+          # Alternative: Use r416183b1 (Android S) or r450784d (Android T) for newer toolchains
+          aosp-clang-version: r383902b1 
+          other-clang-branch: main
+          other-gcc64-branch: main
+          other-gcc32-branch: main
+          ksu: false
+          ksu-version: main
+          ksu-lkm: false
+          ksu-other: false
+          rekernel: false
+          nethunter: false
+          nethunter-patch: false
+          lxc: false
+          lxc-patch: false
+          kvm: false
+          bbg: false
+          disable-lto: false
+          ccache: false
+          release: false
+          extra-make-args: []   
