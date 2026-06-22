@@ -1,67 +1,62 @@
 name: PROJECT LUCY Kernel Build
 
 on:
-  workflow_dispatch:
+workflow_dispatch:
 
 permissions:
-  contents: write
-  actions: read
+contents: write
 
 jobs:
-  build-kernel:
-    runs-on: ubuntu-22.04
+build-kernel:
+runs-on: ubuntu-22.04
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-          submodules: recursive
+```
+steps:
+  - name: Checkout
+    uses: actions/checkout@v4
+    with:
+      fetch-depth: 0
+      submodules: recursive
 
-      - name: Build Kernel
-        uses: dabao1955/kernel_build_action@v1.10.1
-        with:
-          kernel-url: https://github.com/YOUR_USERNAME/android_kernel_xiaomi_sm8250
-          kernel-branch: lineage-23.3
+  - name: Build Kernel
+    uses: dabao1955/kernel_build_action@v1.10.1
+    with:
+      # CHANGE THIS TO YOUR ACTUAL KERNEL REPO
+      kernel-url: https://github.com/USERNAME/android_kernel_xiaomi_sm8250
+      kernel-branch: lineage-23.2
 
-          kernel-dir: kernel
-          arch: arm64
-          config: gki_defconfig
+      kernel-dir: kernel
+      arch: arm64
+      config: munch_defconfig
+      depth: 1
 
-          depth: 1
+      # Toolchain
+      aosp-clang: true
+      aosp-gcc: false
 
-          # ----------------------------
-          # TOOLCHAIN (FIXED)
-          # ----------------------------
-          aosp-clang: true
-          aosp-gcc: true
-          aosp-clang-version: r487747c
+      # Vendor
+      vendor: false
 
-          # ----------------------------
-          # CLEAN BUILD (LOS STYLE)
-          # ----------------------------
-          vendor: false
+      # KernelSU
+      ksu: false
+      ksu-lkm: false
+      ksu-other: false
 
-          # KernelSU OFF (clean lineage source)
-          ksu: false
-          ksu-version: main
-          ksu-lkm: false
-          ksu-other: false
+      # Optional Features
+      rekernel: false
+      nethunter: false
+      nethunter-patch: false
+      lxc: false
+      lxc-patch: false
+      kvm: false
+      bbg: false
 
-          # Optional features OFF for stability
-          rekernel: false
-          nethunter: false
-          nethunter-patch: false
-          lxc: false
-          lxc-patch: false
-          kvm: false
-          bbg: false
+      # Build
+      disable-lto: false
+      ccache: true
+      release: true
 
-          disable-lto: false
-          ccache: true
-          release: true
+      access-token: ${{ secrets.GITHUB_TOKEN }}
 
-          access-token: ${{ secrets.GITHUB_TOKEN }}
-
-          # MUST be string (prevents YAML parsing issues)
-          extra-make-args: ""
+      extra-make-args: ""
+```
