@@ -3,16 +3,22 @@ name: CI
 on:
   workflow_dispatch
 
+# FIX 1: Expanded permissions to resolve "Could not resolve to a node" errors
+# Required for the action to access internal GitHub API nodes for releases/metadata
 permissions:
   contents: write
+  pull-requests: write
+  issues: write
+  actions: read
 
 jobs:
   build-kernel:
     name: Build Kernel
     runs-on: ubuntu-22.04
     steps:
-      - name: Build
-        uses: dabao1955/kernel_build_action@main
+      - name: Build Kernel
+        # FIX 2: Pin to latest stable version (v1.10.1) instead of @main for reliability
+        uses: dabao1955/kernel_build_action@v1.10.1
         with:
           kernel-url: https://github.com/YOUR_USERNAME/android_kernel_xiaomi_sm8250
           kernel-branch: lineage-23.2
@@ -26,12 +32,15 @@ jobs:
           vendor: false
           vendor-branch: main
           vendor-dir: vendor
-          # FIX: Updated from r383902 to r383902b1 (valid suffix)
-          # Alternative: Use r416183b1 (Android S) or r450784d (Android T) for newer toolchains
-          aosp-clang-version: r383902b1 
+          
+          # FIX 3: Corrected Clang version (r383902 requires 'b1' suffix to avoid 400 error)
+          # Alternative: r416183b1 (Android S) or r450784d (Android T)
+          aosp-clang-version: r383902b1
+          
           other-clang-branch: main
           other-gcc64-branch: main
           other-gcc32-branch: main
+          
           ksu: false
           ksu-version: main
           ksu-lkm: false
@@ -46,4 +55,7 @@ jobs:
           disable-lto: false
           ccache: false
           release: false
+          
+          # FIX 4: Explicitly pass the token to ensure elevated permissions are used
+          access-token: ${{ secrets.GITHUB_TOKEN }}
           extra-make-args: []   
