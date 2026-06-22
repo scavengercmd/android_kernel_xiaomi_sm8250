@@ -1,10 +1,8 @@
-name: CI
+name: PROJECT LUCY Kernel Build
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
 
-# FIX 1: Expanded permissions to resolve "Could not resolve to a node" errors
-# Required for the action to access internal GitHub API nodes for releases/metadata
 permissions:
   contents: write
   pull-requests: write
@@ -15,36 +13,47 @@ jobs:
   build-kernel:
     name: Build Kernel
     runs-on: ubuntu-22.04
+
     steps:
+      - name: Checkout (not strictly needed by action but safer)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
       - name: Build Kernel
-        # FIX 2: Pin to latest stable version (v1.10.1) instead of @main for reliability
         uses: dabao1955/kernel_build_action@v1.10.1
+
         with:
           kernel-url: https://github.com/YOUR_USERNAME/android_kernel_xiaomi_sm8250
           kernel-branch: lineage-23.2
+
           config: munch_defconfig
           arch: arm64
-          anykernel3: true
-          aosp-gcc: true
-          aosp-clang: true
           kernel-dir: kernel
+
           depth: 1
-          vendor: false
-          vendor-branch: main
-          vendor-dir: vendor
-          
-          # FIX 3: Corrected Clang version (r383902 requires 'b1' suffix to avoid 400 error)
-          # Alternative: r416183b1 (Android S) or r450784d (Android T)
+
+          # ------------------------
+          # TOOLCHAIN (KEEP SIMPLE)
+          # ------------------------
+          aosp-clang: true
+          aosp-gcc: false
+
           aosp-clang-version: r383902b1
-          
-          other-clang-branch: main
-          other-gcc64-branch: main
-          other-gcc32-branch: main
-          
+
+          # ------------------------
+          # VENDOR (DISABLED CLEANLY)
+          # ------------------------
+          vendor: false
+
+          # ------------------------
+          # FEATURES (ALL OFF FOR STABILITY)
+          # ------------------------
           ksu: false
           ksu-version: main
           ksu-lkm: false
           ksu-other: false
+
           rekernel: false
           nethunter: false
           nethunter-patch: false
@@ -52,10 +61,15 @@ jobs:
           lxc-patch: false
           kvm: false
           bbg: false
+
           disable-lto: false
-          ccache: false
-          release: false
-          
-          # FIX 4: Explicitly pass the token to ensure elevated permissions are used
+          ccache: true
+          release: true
+
+          # ------------------------
+          # SECURITY TOKEN
+          # ------------------------
           access-token: ${{ secrets.GITHUB_TOKEN }}
-          extra-make-args: []   
+
+          # FIX: remove empty array (causes YAML parsing issues in some runners)
+          extra-make-args: ""
