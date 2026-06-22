@@ -8,13 +8,16 @@ jobs:
     steps:
       - name: Checkout Kernel Source
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
       - name: Build Kernel
         uses: Fyg369/Kernel-Action@main
         with:
-          kernel-url: https://github.com/YourUsername/android_kernel_xiaomi_sm8250
+          kernel-url: https://github.com/YOUR_USERNAME/android_kernel_xiaomi_sm8250
           kernel-branch: lineage-23.2
           config: munch_defconfig
           arch: arm64
+          # This enables the creation of a flashable ZIP
           anykernel3: true
           anykernel3-url: https://github.com/osm0sis/AnyKernel3
