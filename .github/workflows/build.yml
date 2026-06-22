@@ -1,15 +1,51 @@
 name: Project Lucy
 
 on:
-  workflow_dispatch:
+workflow_dispatch:
+
+permissions:
+contents: write
 
 jobs:
-  build:
-    runs-on: ubuntu-22.04
+build:
+runs-on: ubuntu-22.04
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+```
+steps:
+  - name: Checkout Kernel
+    uses: actions/checkout@v4
+    with:
+      fetch-depth: 1
 
-      - name: Test
-        run: echo "Project Lucy"
+  - name: Install Dependencies
+    run: |
+      sudo apt update
+      sudo apt install -y git bc bison flex zip curl build-essential libssl-dev libelf-dev
+
+  - name: Download Proton Clang
+    run: |
+      git clone --depth=1 https://github.com/kdrag0n/proton-clang clang
+
+  - name: Build Kernel
+    run: |
+      export ARCH=arm64
+      export SUBARCH=arm64
+      export PATH=$PWD/clang/bin:$PATH
+
+      mkdir -p out
+
+      make O=out munch_defconfig
+
+      make -j$(nproc) \
+        O=out \
+        CC=clang \
+        LLVM=1 \
+        LLVM_IAS=1
+
+  - name: Upload Kernel
+    uses: actions/upload-artifact@v4
+    with:
+      name: ProjectLucy-Kernel
+      path: |
+        out/arch/arm64/boot/Image*
+```
