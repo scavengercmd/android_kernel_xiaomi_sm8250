@@ -1,0 +1,18 @@
+name: Project Lucy
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Kernel
+        uses: Fyg369/Kernel-Action@main
+        with:
+          kernel-url: https://github.com/YourUsername/android_kernel_xiaomi_sm8250
+          kernel-branch: lineage-23.2
+          config: munch_defconfig
+          arch: arm64
+          anykernel3: true
+          anykernel3-url: https://github.com/osm0sis/AnyKernel3
