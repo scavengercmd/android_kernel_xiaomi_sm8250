@@ -22,11 +22,12 @@ jobs:
         uses: dabao1955/kernel_build_action@v1.10.1
         with:
           kernel-url: https://github.com/YOUR_USERNAME/android_kernel_xiaomi_sm8250
-          kernel-branch: lineage-23.2
+          kernel-branch: lineage-23.3
 
           kernel-dir: kernel
           arch: arm64
-          config: munch_defconfig
+          config: gki_defconfig
+
           depth: 1
 
           # ----------------------------
@@ -34,24 +35,20 @@ jobs:
           # ----------------------------
           aosp-clang: true
           aosp-gcc: true
-          aosp-clang-version: r383902b1
+          aosp-clang-version: r487747c
 
           # ----------------------------
-          # VENDOR (SAFER OFF)
+          # CLEAN BUILD (LOS STYLE)
           # ----------------------------
           vendor: false
 
-          # ----------------------------
-          # KERNELSU (OFF TO AVOID BREAKS)
-          # ----------------------------
+          # KernelSU OFF (clean lineage source)
           ksu: false
           ksu-version: main
           ksu-lkm: false
           ksu-other: false
 
-          # ----------------------------
-          # OPTIONAL FEATURES OFF (STABILITY)
-          # ----------------------------
+          # Optional features OFF for stability
           rekernel: false
           nethunter: false
           nethunter-patch: false
@@ -60,15 +57,11 @@ jobs:
           kvm: false
           bbg: false
 
-          # ----------------------------
-          # BUILD OPTS
-          # ----------------------------
           disable-lto: false
           ccache: true
           release: true
 
-          # REQUIRED TOKEN
           access-token: ${{ secrets.GITHUB_TOKEN }}
 
-          # IMPORTANT: must be string, not empty array
+          # MUST be string (prevents YAML parsing issues)
           extra-make-args: ""
