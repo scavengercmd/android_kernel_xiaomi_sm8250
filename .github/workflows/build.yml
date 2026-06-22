@@ -1,71 +1,54 @@
 name: PROJECT LUCY Kernel Build
 
 on:
-workflow_dispatch:
+  workflow_dispatch:
 
 permissions:
-contents: write
-packages: write
+  contents: write
 
 jobs:
-build-kernel:
-runs-on: ubuntu-22.04
+  build-kernel:
+    runs-on: ubuntu-22.04
 
-```
-steps:
-  - name: Checkout Source
-    uses: actions/checkout@v4
-    with:
-      fetch-depth: 0
-      submodules: recursive
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
 
-  - name: Build Kernel
-    uses: dabao1955/kernel_build_action@v1.10.1
-    with:
-      kernel-url: https://github.com/YOUR_REAL_USERNAME/android_kernel_xiaomi_sm8250
-      kernel-branch: lineage-23.2
+      - name: Build Kernel
+        uses: dabao1955/kernel_build_action@v1.10.1
+        with:
+          kernel-url: https://github.com/YOUR_USERNAME/android_kernel_xiaomi_sm8250
+          kernel-branch: lineage-23.2
 
-      kernel-dir: kernel
-      arch: arm64
-      config: munch_defconfig
+          kernel-dir: kernel
+          arch: arm64
+          config: munch_defconfig
+          depth: 1
 
-      depth: 1
+          aosp-clang: true
+          aosp-gcc: false
 
-      # Toolchain
-      aosp-clang: true
-      aosp-gcc: false
+          vendor: false
 
-      # Features
-      vendor: false
+          ksu: false
+          ksu-lkm: false
+          ksu-other: false
 
-      ksu: false
-      ksu-lkm: false
-      ksu-other: false
+          rekernel: false
+          nethunter: false
+          nethunter-patch: false
+          lxc: false
+          lxc-patch: false
+          kvm: false
+          bbg: false
 
-      rekernel: false
-      nethunter: false
-      nethunter-patch: false
-      lxc: false
-      lxc-patch: false
-      kvm: false
-      bbg: false
+          disable-lto: false
+          ccache: true
+          release: true
 
-      disable-lto: false
-      ccache: true
+          access-token: ${{ secrets.GITHUB_TOKEN }}
 
-      release: true
-
-      access-token: ${{ github.token }}
-
-      extra-make-args: "-j$(nproc)"
-
-  - name: Upload Build Artifact
-    if: always()
-    uses: actions/upload-artifact@v4
-    with:
-      name: kernel-build-output
-      path: |
-        kernel/out/**/*.zip
-        kernel/out/**/*.img
-        kernel/out/**/*.gz
-```
+          extra-make-args: ""
