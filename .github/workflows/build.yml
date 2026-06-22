@@ -5,55 +5,53 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
-  issues: write
   actions: read
 
 jobs:
   build-kernel:
-    name: Build Kernel
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Checkout (not strictly needed by action but safer)
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
+          submodules: recursive
 
       - name: Build Kernel
         uses: dabao1955/kernel_build_action@v1.10.1
-
         with:
           kernel-url: https://github.com/YOUR_USERNAME/android_kernel_xiaomi_sm8250
           kernel-branch: lineage-23.2
 
-          config: munch_defconfig
-          arch: arm64
           kernel-dir: kernel
-
+          arch: arm64
+          config: munch_defconfig
           depth: 1
 
-          # ------------------------
-          # TOOLCHAIN (KEEP SIMPLE)
-          # ------------------------
+          # ----------------------------
+          # TOOLCHAIN (FIXED)
+          # ----------------------------
           aosp-clang: true
-          aosp-gcc: false
-
+          aosp-gcc: true
           aosp-clang-version: r383902b1
 
-          # ------------------------
-          # VENDOR (DISABLED CLEANLY)
-          # ------------------------
+          # ----------------------------
+          # VENDOR (SAFER OFF)
+          # ----------------------------
           vendor: false
 
-          # ------------------------
-          # FEATURES (ALL OFF FOR STABILITY)
-          # ------------------------
+          # ----------------------------
+          # KERNELSU (OFF TO AVOID BREAKS)
+          # ----------------------------
           ksu: false
           ksu-version: main
           ksu-lkm: false
           ksu-other: false
 
+          # ----------------------------
+          # OPTIONAL FEATURES OFF (STABILITY)
+          # ----------------------------
           rekernel: false
           nethunter: false
           nethunter-patch: false
@@ -62,14 +60,15 @@ jobs:
           kvm: false
           bbg: false
 
+          # ----------------------------
+          # BUILD OPTS
+          # ----------------------------
           disable-lto: false
           ccache: true
           release: true
 
-          # ------------------------
-          # SECURITY TOKEN
-          # ------------------------
+          # REQUIRED TOKEN
           access-token: ${{ secrets.GITHUB_TOKEN }}
 
-          # FIX: remove empty array (causes YAML parsing issues in some runners)
+          # IMPORTANT: must be string, not empty array
           extra-make-args: ""
