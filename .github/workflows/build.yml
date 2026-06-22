@@ -6,7 +6,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Kernel Source
+        uses: actions/checkout@v4
+
       - name: Build Kernel
         uses: Fyg369/Kernel-Action@main
         with:
